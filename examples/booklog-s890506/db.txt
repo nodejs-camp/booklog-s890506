@@ -1,0 +1,7 @@
+[{
+	subject: "Hello",
+	content: "Hi !"
+},{
+	subject: "World",
+	content: "Hi !"
+}]
