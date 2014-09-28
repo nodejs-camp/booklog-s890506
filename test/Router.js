@@ -300,37 +300,12 @@ describe('Router', function(){
   describe('.use', function() {
     it('should require arguments', function(){
       var router = new Router();
-      router.use.bind(router).should.throw(/requires middleware function/)
+      router.use.bind(router).should.throw(/requires callback function/)
     })
 
     it('should not accept non-functions', function(){
       var router = new Router();
-      router.use.bind(router, '/', 'hello').should.throw(/requires middleware function.*string/)
-      router.use.bind(router, '/', 5).should.throw(/requires middleware function.*number/)
-      router.use.bind(router, '/', null).should.throw(/requires middleware function.*Null/)
-      router.use.bind(router, '/', new Date()).should.throw(/requires middleware function.*Date/)
-    })
-
-    it('should accept array of middleware', function(done){
-      var count = 0;
-      var router = new Router();
-
-      function fn1(req, res, next){
-        assert.equal(++count, 1);
-        next();
-      }
-
-      function fn2(req, res, next){
-        assert.equal(++count, 2);
-        next();
-      }
-
-      router.use([fn1, fn2], function(req, res){
-        assert.equal(++count, 3);
-        done();
-      });
-
-      router.handle({ url: '/foo', method: 'GET' }, {}, function(){});
+      router.use.bind(router, '/', 'hello').should.throw(/requires callback function/)
     })
   })
 

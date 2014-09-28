@@ -15,9 +15,7 @@ exports.load = function(req, res, next){
   if (req.user) {
     next();
   } else {
-    var err = new Error('cannot find user ' + id);
-    err.status = 404;
-    next(err);
+    next(new Error('cannot find user ' + id));
   }
 };
 

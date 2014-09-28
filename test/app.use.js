@@ -16,6 +16,11 @@ describe('app', function(){
     app.use(blog);
   })
 
+  it('should reject missing functions', function(){
+    var app = express();
+    app.use.bind(app, 3).should.throw(/requires middleware function/);
+  })
+
   describe('.use(app)', function(){
     it('should mount the app', function(done){
       var blog = express()
@@ -166,106 +171,9 @@ describe('app', function(){
       .post('/foo')
       .expect(200, 'saw POST /foo', cb);
     })
-
-    it('should accept array of middleware', function (done) {
-      var app = express();
-
-      function fn1(req, res, next) {
-        res.setHeader('x-fn-1', 'hit');
-        next();
-      }
-
-      function fn2(req, res, next) {
-        res.setHeader('x-fn-2', 'hit');
-        next();
-      }
-
-      function fn3(req, res, next) {
-        res.setHeader('x-fn-3', 'hit');
-        res.end();
-      }
-
-      app.use([fn1, fn2, fn3]);
-
-      request(app)
-      .get('/')
-      .expect('x-fn-1', 'hit')
-      .expect('x-fn-2', 'hit')
-      .expect('x-fn-3', 'hit')
-      .expect(200, done);
-    })
-
-    it('should accept multiple arrays of middleware', function (done) {
-      var app = express();
-
-      function fn1(req, res, next) {
-        res.setHeader('x-fn-1', 'hit');
-        next();
-      }
-
-      function fn2(req, res, next) {
-        res.setHeader('x-fn-2', 'hit');
-        next();
-      }
-
-      function fn3(req, res, next) {
-        res.setHeader('x-fn-3', 'hit');
-        res.end();
-      }
-
-      app.use([fn1, fn2], [fn3]);
-
-      request(app)
-      .get('/')
-      .expect('x-fn-1', 'hit')
-      .expect('x-fn-2', 'hit')
-      .expect('x-fn-3', 'hit')
-      .expect(200, done);
-    })
-
-    it('should accept nested arrays of middleware', function (done) {
-      var app = express();
-
-      function fn1(req, res, next) {
-        res.setHeader('x-fn-1', 'hit');
-        next();
-      }
-
-      function fn2(req, res, next) {
-        res.setHeader('x-fn-2', 'hit');
-        next();
-      }
-
-      function fn3(req, res, next) {
-        res.setHeader('x-fn-3', 'hit');
-        res.end();
-      }
-
-      app.use([[fn1], fn2], [fn3]);
-
-      request(app)
-      .get('/')
-      .expect('x-fn-1', 'hit')
-      .expect('x-fn-2', 'hit')
-      .expect('x-fn-3', 'hit')
-      .expect(200, done);
-    })
   })
 
   describe('.use(path, middleware)', function(){
-    it('should reject missing functions', function () {
-      var app = express();
-      app.use.bind(app, '/').should.throw(/requires middleware function/);
-    })
-
-    it('should reject non-functions as middleware', function () {
-      var app = express();
-      app.use.bind(app, '/', 'hi').should.throw(/requires middleware function.*string/);
-      app.use.bind(app, '/', 5).should.throw(/requires middleware function.*number/);
-      app.use.bind(app, '/', null).should.throw(/requires middleware function.*Null/);
-      app.use.bind(app, '/', new Date()).should.throw(/requires middleware function.*Date/);
-    })
-
     it('should strip path from req.url', function (done) {
       var app = express();
 
@@ -346,90 +254,6 @@ describe('app', function(){
       .expect(200, 'saw POST /bar', cb);
     })
 
-    it('should accept array of middleware', function (done) {
-      var app = express();
-
-      function fn1(req, res, next) {
-        res.setHeader('x-fn-1', 'hit');
-        next();
-      }
-
-      function fn2(req, res, next) {
-        res.setHeader('x-fn-2', 'hit');
-        next();
-      }
-
-      function fn3(req, res, next) {
-        res.setHeader('x-fn-3', 'hit');
-        res.end();
-      }
-
-      app.use('/foo', [fn1, fn2, fn3]);
-
-      request(app)
-      .get('/foo')
-      .expect('x-fn-1', 'hit')
-      .expect('x-fn-2', 'hit')
-      .expect('x-fn-3', 'hit')
-      .expect(200, done);
-    })
-
-    it('should accept multiple arrays of middleware', function (done) {
-      var app = express();
-
-      function fn1(req, res, next) {
-        res.setHeader('x-fn-1', 'hit');
-        next();
-      }
-
-      function fn2(req, res, next) {
-        res.setHeader('x-fn-2', 'hit');
-        next();
-      }
-
-      function fn3(req, res, next) {
-        res.setHeader('x-fn-3', 'hit');
-        res.end();
-      }
-
-      app.use('/foo', [fn1, fn2], [fn3]);
-
-      request(app)
-      .get('/foo')
-      .expect('x-fn-1', 'hit')
-      .expect('x-fn-2', 'hit')
-      .expect('x-fn-3', 'hit')
-      .expect(200, done);
-    })
-
-    it('should accept nested arrays of middleware', function (done) {
-      var app = express();
-
-      function fn1(req, res, next) {
-        res.setHeader('x-fn-1', 'hit');
-        next();
-      }
-
-      function fn2(req, res, next) {
-        res.setHeader('x-fn-2', 'hit');
-        next();
-      }
-
-      function fn3(req, res, next) {
-        res.setHeader('x-fn-3', 'hit');
-        res.end();
-      }
-
-      app.use('/foo', [fn1, [fn2]], [fn3]);
-
-      request(app)
-      .get('/foo')
-      .expect('x-fn-1', 'hit')
-      .expect('x-fn-2', 'hit')
-      .expect('x-fn-3', 'hit')
-      .expect(200, done);
-    })
-
     it('should support array of paths', function (done) {
       var app = express();
       var cb = after(3, done);
@@ -448,42 +272,6 @@ describe('app', function(){
 
       request(app)
       .get('/bar')
-      .expect(200, 'saw GET / through /bar', cb);
-    })
-
-    it('should support array of paths with middleware array', function (done) {
-      var app = express();
-      var cb = after(2, done);
-
-      function fn1(req, res, next) {
-        res.setHeader('x-fn-1', 'hit');
-        next();
-      }
-
-      function fn2(req, res, next) {
-        res.setHeader('x-fn-2', 'hit');
-        next();
-      }
-
-      function fn3(req, res, next) {
-        res.setHeader('x-fn-3', 'hit');
-        res.send('saw ' + req.method + ' ' + req.url + ' through ' + req.originalUrl);
-      }
-
-      app.use(['/foo/', '/bar'], [[fn1], fn2], [fn3]);
-
-      request(app)
-      .get('/foo')
-      .expect('x-fn-1', 'hit')
-      .expect('x-fn-2', 'hit')
-      .expect('x-fn-3', 'hit')
-      .expect(200, 'saw GET / through /foo', cb);
-
-      request(app)
-      .get('/bar')
-      .expect('x-fn-1', 'hit')
-      .expect('x-fn-2', 'hit')
-      .expect('x-fn-3', 'hit')
       .expect(200, 'saw GET / through /bar', cb);
     })
 
@@ -510,18 +298,6 @@ describe('app', function(){
       request(app)
       .get('/get/zoo')
       .expect(404, cb);
-    })
-
-    it('should support empty string path', function (done) {
-      var app = express();
-
-      app.use('', function (req, res) {
-        res.send('saw ' + req.method + ' ' + req.url + ' through ' + req.originalUrl);
-      });
-
-      request(app)
-      .get('/')
-      .expect(200, 'saw GET / through /', done);
     })
   })
 })

@@ -1,0 +1,40 @@
+extends layout
+
+block feet
+  script(src='views/index.js')
+
+block content
+    .container
+        .row
+            .col-lg-8
+              div#blog-post
+            .col-md-4
+              .well#search-section
+                h4 Author Search
+                .input-group
+                  input.form-control#search-tag(type='text')
+                  span.input-group-btn
+                    button.btn.btn-default.btn-search(type='button')
+                      span.glyphicon.glyphicon-search
+              .well#search-result
+
+    script(type='text/template', id='tmpl-post')
+      <% _.each(posts, function(post) {%>
+      .well
+        h1 <%= post.subject %>
+        p.lead
+          | by
+          | &nbsp;<%= post.userId.facebook.displayName %>
+        p
+          span.glyphicon.glyphicon-time
+          | Posted on <%= post.userId.timeCreated %>
+        img.img-responsive(src='http://placehold.it/900x300', alt='')
+        p.lead
+          | <%= post.content %>
+      <%}); %>
+
+    script(type='text/template', id='tmpl-results')
+      h4 Search Result
+      <% _.each(posts, function(post) {%>
+      p <%= post.subject %>
+      <%}); %>

@@ -34,13 +34,13 @@ function GithubView(name, options){
 GithubView.prototype.render = function(options, fn){
   var self = this;
   var opts = {
-    host: 'raw.githubusercontent.com',
-    port: 443,
+    host: 'rawgithub.com',
+    port: 80,
     path: this.path,
     method: 'GET'
   };
 
-  https.request(opts, function(res) {
+  http.request(opts, function(res) {
     var buf = '';
     res.setEncoding('utf8');
     res.on('data', function(str){ buf += str });

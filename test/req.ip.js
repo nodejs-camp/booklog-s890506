@@ -45,9 +45,10 @@ describe('req', function(){
             res.send(req.ip);
           });
 
-          var test = request(app).get('/')
-          test.set('X-Forwarded-For', 'client, p1, p2')
-          test.expect(200, getExpectedClientAddress(test._server), done);
+          request(app)
+          .get('/')
+          .set('X-Forwarded-For', 'client, p1, p2')
+          .expect('127.0.0.1', done);
         })
       })
     })
@@ -62,19 +63,10 @@ describe('req', function(){
           res.send(req.ip);
         });
 
-          var test = request(app).get('/')
-          test.expect(200, getExpectedClientAddress(test._server), done);
+        request(app)
+        .get('/')
+        .expect('127.0.0.1', done);
       })
     })
   })
 })
-
-/**
- * Get the local client address depending on AF_NET of server
- */
-
-function getExpectedClientAddress(server) {
-  return server.address().address === '::'
-    ? '::ffff:127.0.0.1'
-    : '127.0.0.1';
-}
